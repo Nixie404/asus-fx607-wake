@@ -17,9 +17,13 @@ static int __init fx607_gpe02_init(void)
 	acpi_handle handle;
 	const char *board = dmi_get_system_info(DMI_BOARD_NAME);
 	const char *bios = dmi_get_system_info(DMI_BIOS_VERSION);
+	size_t board_len;
 
-	if (!board || strcmp(board, "FX607VJ") ||
-	    !bios || strcmp(bios, "FX607VJ.340"))
+	if (!board || !bios ||
+	    (strcmp(board, "FX607VJ") && strcmp(board, "FX607VUR")))
+		return -ENODEV;
+	board_len = strlen(board);
+	if (strncmp(bios, board, board_len) || strcmp(bios + board_len, ".340"))
 		return -ENODEV;
 	if (ACPI_FAILURE(acpi_get_handle(NULL, "\\_GPE._L02", &handle)) ||
 	    ACPI_FAILURE(acpi_get_handle(NULL, "\\_SB.PC00.LPCB.ECLV", &handle)))
@@ -66,4 +70,4 @@ static void __exit fx607_gpe02_exit(void)
 module_init(fx607_gpe02_init);
 module_exit(fx607_gpe02_exit);
 MODULE_LICENSE("GPL");
-MODULE_DESCRIPTION("Experimental FX607VJ BIOS 340 GPE02 wake-mask quirk");
+MODULE_DESCRIPTION("Experimental FX607VJ/FX607VUR BIOS 340 GPE02 wake-mask quirk");

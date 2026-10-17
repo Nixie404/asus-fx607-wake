@@ -1,4 +1,8 @@
 #!/bin/sh
 set -eu
-[ "$(cat /sys/class/dmi/id/board_name 2>/dev/null)" = FX607VJ ] &&
-[ "$(cat /sys/class/dmi/id/bios_version 2>/dev/null)" = FX607VJ.340 ]
+board=$(cat /sys/class/dmi/id/board_name 2>/dev/null)
+case "$board" in
+FX607VJ|FX607VUR) ;;
+*) exit 1 ;;
+esac
+[ "$(cat /sys/class/dmi/id/bios_version 2>/dev/null)" = "$board.340" ]
